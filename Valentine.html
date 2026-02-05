@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- iOS viewport fix -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>For Jiya 🤍</title>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background:linear-gradient(135deg,#7B0D1E,#4a0712);
+  overflow:hidden;
+  text-align:center;
+  color:white;
+  touch-action:manipulation;
+}
+
+/* background floating hearts */
+.bg-heart{
+  position:fixed;
+  bottom:-20px;
+  font-size:18px;
+  opacity:.35;
+  animation:floatUp 10s linear forwards;
+  pointer-events:none;
+}
+@keyframes floatUp{
+  to{transform:translateY(-120vh);opacity:0;}
+}
+
+/* falling hearts */
+.heart{
+  position:absolute;
+  font-size:42px; /* bigger for easy iPhone tap */
+  cursor:pointer;
+  user-select:none;
+  touch-action:manipulation;
+}
+
+/* popup card */
+.card{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#fffaf3;
+  color:#333;
+  padding:35px 25px;
+  border-radius:24px;
+  width:85%;
+  max-width:380px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+  display:none;
+}
+
+/* buttons */
+button{
+  padding:14px 24px;
+  margin:10px;
+  border:none;
+  border-radius:22px;
+  font-size:16px;
+  cursor:pointer;
+  background:#9F2042;
+  color:white;
+  touch-action:manipulation;
+}
+#noBtn{background:#eee;color:#444;}
+
+/* message */
+.msg{
+  background:#f3e3d3;
+  padding:18px;
+  border-radius:16px;
+  line-height:1.6;
+  font-size:14px;
+  text-align:left;
+}
+</style>
+</head>
+
+<body>
+
+<h2 style="margin-top:20px;">Catch 14 hearts 🤎</h2>
+<p>Unlock something special…</p>
+
+<div class="card" id="question"></div>
+
+<script>
+/* ---------- ORIGINAL QUESTION ---------- */
+const originalQuestionHTML = `
+  <h3>Will you be my Valentine? 🤍</h3>
+  <button onclick="yes()">Yes 🤎</button>
+  <button id="noBtn" onclick="no()">No 🤍</button>
+`;
+
+/* ---------- BACKGROUND HEARTS ---------- */
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="bg-heart";
+  h.innerText="🤎";
+  h.style.left=Math.random()*100+"vw";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),10000);
+},700);
+
+/* ---------- GAME ---------- */
+let score = 0;
+let gameRunning = true;
+
+function spawnHeart(){
+  if(!gameRunning) return;
+
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerText="🤎";
+
+  h.style.left=Math.random()*90+"vw";
+  h.style.top="-40px";
+
+  document.body.appendChild(h);
+
+  const fall=setInterval(()=>{
+    h.style.top=(h.offsetTop+3)+"px";
+
+    if(h.offsetTop>window.innerHeight){
+      h.remove();
+      clearInterval(fall);
+    }
+  },20);
+
+  const catchHeart=(e)=>{
+    e.preventDefault();
+
+    if(!gameRunning) return;
+
+    score++;
+    h.remove();
+    clearInterval(fall);
+
+    if(score>=14){
+      const q=document.getElementById("question");
+      q.innerHTML = originalQuestionHTML;
+      q.style.display = "block";
+      gameRunning = false;
+    }
+  };
+
+  h.addEventListener("click", catchHeart);
+  h.addEventListener("touchstart", catchHeart, {passive:false});
+}
+
+setInterval(spawnHeart,900);
+
+/* ---------- YES ---------- */
+function yes(){
+  gameRunning = false;
+  document.querySelectorAll(".heart").forEach(h=>h.remove());
+
+  document.getElementById("question").innerHTML = `
+    <div class="msg">
+      The way we started talking to each other out of the blue is....<br>
+      ...definitely one of the best things that has happened to me <br><br>
+
+      and somewhere along the way,<br>
+      I realized I really like you…<br>
+      and that you quietly started meaning a lot to me.<br><br>
+
+      I don’t know where this story is going yet,<br>
+      but I’m really glad I get to be in this part of it with you.<br><br>
+
+      Also… I’m sooo stoked and honoured to have you as my Valentine 🤭😋<br><br>
+
+      finally when I say I like you I mean:,<br>
+      your weirdness, quirks, laughter, voice, 
+      those giggles (which is sooo cute btw jiyaaa 🥺), the good and the bad, 
+      the happy and the sad, the sudden bursts of energy and pretty much ALL OF U.<br><br>
+
+      SO FUCK YEAH.. I'M GLAD YOU SAID YES 😌 heheehe 😶‍🌫️
+    </div>
+  `;
+}
+
+/* ---------- NO ---------- */
+function no(){
+  const q = document.getElementById("question");
+
+  q.innerHTML = `
+    <div class="msg" style="text-align:center">
+      AHEM… excuse me miss 😌<br><br>
+      That answer felt… scientifically incorrect,<br>
+      emotionally suspicious,<br>
+      and romantically illegal under section 143 of the<br>
+      <b>Universal Cute Things Act</b> 🤨<br><br>
+      Let’s try that again… properly this time 😤
+    </div>
+    <button onclick="restartGame()">Fine, one more try 🤭</button>
+  `;
+}
+
+/* ---------- RESTART ---------- */
+function restartGame(){
+  score = 0;
+  gameRunning = true;
+
+  const q = document.getElementById("question");
+  q.innerHTML = originalQuestionHTML;
+  q.style.display = "none";
+}
+</script>
+
+</body>
+</html>
